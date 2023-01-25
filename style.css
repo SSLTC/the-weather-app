@@ -1,3 +1,13 @@
-
-
-/*# sourceMappingURL=style.css.map */
+* {
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+}
+* body {
+  margin-top: 1rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 0.8rem;
+}
+* body #weatherInfo {
+  text-align: center;
+}/*# sourceMappingURL=style.css.map */
