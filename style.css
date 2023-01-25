@@ -10,4 +10,7 @@
 }
 * body #weatherInfo {
   text-align: center;
+}
+* body #weatherInfo h1 {
+  font-size: 1rem;
 }/*# sourceMappingURL=style.css.map */
