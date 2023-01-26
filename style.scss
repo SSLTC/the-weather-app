@@ -6,16 +6,36 @@
     padding: 0px;
 
     body {
-        margin-top: 1rem;
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         font-size: 0.8rem;
 
-        #weatherInfo {
+        header {
+            padding: 1rem;
             text-align: center;
+        }
 
-            h1 {
-                font-size: 1rem;
+        main {
+            height: 80vh;
+            //background: url(mountain.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            display: flex;
+            justify-content: center;
+
+            #weatherInfo {
+                padding: 1rem;
+                background-color: #ffffff67;
+                text-align: center;
+    
+                h1 {
+                    font-size: 1rem;
+                }
             }
+        }
+
+        footer {
+            text-align: center;
         }
     }
 }

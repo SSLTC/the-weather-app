@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="./style.css">
     <script type="module" src="./script.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.0/chart.min.js"></script>
 
     <title>Weather app</title>
 </head>
@@ -23,7 +24,15 @@
           <option value="Hong Kong">Hong Kong</option>
         </select>
     </header>
-    <main><div id="weatherInfo"></div></main>
-    
+
+    <main>
+        <div id="weatherInfo">
+            <canvas id="myChart"></canvas>
+        </div>
+    </main>
+
+    <footer>
+        <span id="photographer"></span><br/>Read more about the <a href="https://unsplash.com/license">Unsplash License</a>
+    </footer>
 </body>
 </html>
