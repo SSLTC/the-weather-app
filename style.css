@@ -12,19 +12,31 @@
   text-align: center;
 }
 * body main {
-  height: 80vh;
+  height: 90vh;
   background-repeat: no-repeat;
   background-size: cover;
   display: flex;
   justify-content: center;
 }
 * body main #weatherInfo {
-  padding: 1rem;
+  padding: 0.8rem;
   background-color: rgba(255, 255, 255, 0.4039215686);
   text-align: center;
+  display: flex;
+  flex-flow: column;
+  scroll-behavior: auto;
 }
-* body main #weatherInfo h1 {
-  font-size: 1rem;
+@media (min-width: 992px) {
+  * body main #weatherInfo {
+    flex-flow: row;
+  }
+}
+* body main #weatherInfo .card {
+  padding: 0.8rem;
+  width: 210px;
+}
+* body main #weatherInfo .card h1 {
+  font-size: 0.8rem;
 }
 * body footer {
   text-align: center;

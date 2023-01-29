@@ -15,7 +15,7 @@
         }
 
         main {
-            height: 80vh;
+            height: 90vh;
             //background: url(mountain.jpg);
             background-repeat: no-repeat;
             background-size: cover;
@@ -24,12 +24,24 @@
             justify-content: center;
 
             #weatherInfo {
-                padding: 1rem;
+                padding: 0.8rem;
                 background-color: #ffffff67;
                 text-align: center;
-    
-                h1 {
-                    font-size: 1rem;
+                display: flex;
+                flex-flow: column;
+                scroll-behavior: auto;
+                
+                @include media-queries.screen-min(media-queries.$screen-lg){
+                    flex-flow: row;
+                }
+
+                .card {
+                    padding: 0.8rem;
+                    width: 210px;
+
+                    h1 {
+                        font-size: 0.8rem;
+                    }
                 }
             }
         }

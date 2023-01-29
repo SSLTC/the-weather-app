@@ -46,11 +46,12 @@ function setCookie(cookieName, cookieValue, expireDays) {
 const apiKey = "1ff8b4b537e2648831257bbfbba69d93";
 
 let unit;
+unit = "metric";
 
 checkCookie();
 
 const elCity = document.querySelector("#city");
-elCity.addEventListener("change", (event) => {
+elCity.addEventListener("change", async (event) => {
   event.preventDefault();
 
   //const cityName = document.querySelector('.city-input').value;
@@ -60,13 +61,13 @@ elCity.addEventListener("change", (event) => {
 
   getWeatherRelatedImage(cityName);
 
-  let geoData = fetchGeoData(cityName);
+  let geoData = await fetchGeoData(cityName);
 
-  let weatherData = fetchWeatherData(geoData);
+  //let weatherData = await fetchWeatherData(geoData);
 
-  let hourlyForecastData = fetchHourlyForecastData(geoData);
+  let forecastData = await fetchForecastData(geoData);
 
-  showWeatherInfo(weatherData, hourlyForecastData);
+  showWeatherInfo(forecastData);
     
 })
 
@@ -94,10 +95,8 @@ getWeatherRelatedImage();
 
 let fetchGeoData = async (cityName) => {
   try {
-    let result = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&units=${unit}&appid=${apiKey}`);
+    let result = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${apiKey}`);
     let geoData = await result.json();
-
-    unit = "metric";
 
     console.log(geoData);
 
@@ -124,45 +123,72 @@ const fetchWeatherData = async (geoData) => {
   }
 }
 
-const fetchHourlyForecastData = async (geoData) => {
+const fetchForecastData = async (geoData) => {
 
-  const queryUrl = `https://api.openweathermap.org/data/2.5/hourly?lat=${geoData[0].lat}&lon=${geoData[0].lon}&units=${unit}&appid=${apiKey}`;
+  const queryUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${geoData[0].lat}&lon=${geoData[0].lon}&units=${unit}&appid=${apiKey}`;
 
   try {
       const result = await fetch(queryUrl);
-      const hourlyForecastData = await result.json();
+      const forecastData = await result.json();
 
-      console.log(hourlyForecastData);
+      console.log(forecastData);
+
+      return forecastData;
 
     } catch (err) {
       console.error(err);
   }
 }
 
-const showWeatherInfo = (weatherData, hourlyForecastData) => {
-  const elH1WeatherInfo = document.createElement("h1");
-  elH1WeatherInfo.innerHTML = weatherData.name 
-      + " (" + weatherData.sys.country + ") " + weatherData.weather[0].main + "<br/>"
-      + "min: " + weatherData.main.temp_min + "° max: " + weatherData.main.temp_max + "°"  
-      + "<br/>" + getDateTime(weatherData.dt);
+const showWeatherInfo = (forecastData) => {
 
-  const iconcode = weatherData.weather[0].icon;
-  const iconUrl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+  const cityName = forecastData.city.name;
+  const country = forecastData.city.country;
 
-  const elWeatherIcon = document.createElement("img");
-  elWeatherIcon.setAttribute("src", iconUrl);
-
-  const elWeatherInfo = document.createElement("p");
-  elWeatherInfo.innerHTML = weatherData.weather[0].description + "<br/>" 
-      + weatherData.main.temp + "° feels like: " + weatherData.main.feels_like + "°";
-
-  const elCanvas = document.createElement("canvas");
-  elCanvas.setAttribute("id", "myChart");
+  let day = new Date(Date.now()-1);
+  let nextForecast;
 
   const elDiv = document.querySelector("#weatherInfo");
   elDiv.innerHTML = "";
-  elDiv.append(elH1WeatherInfo, elWeatherIcon, elWeatherInfo, elCanvas);
-  
+
+  forecastData.list.forEach(forecast => {
+
+        nextForecast = new Date(Date.UTC(1970, 0, 1, 0, 0, forecast.dt));
+
+        if(day.toDateString() != nextForecast.toDateString()) {
+          const elCard = document.createElement("div");
+          elCard.classList.add("card");
+
+          const elH1WeatherInfo = document.createElement("h1");
+          elH1WeatherInfo.innerHTML = cityName 
+          + " (" + country + ") " + forecast.weather[0].main + "<br/>"
+          + "L " + forecast.main.temp_min + "°C H " + forecast.main.temp_max + "°C"  
+          + "<br/>" + getDateTime(forecast.dt);
+    
+          const iconcode = forecast.weather[0].icon;
+          const iconUrl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+    
+          const elWeatherIcon = document.createElement("img");
+          elWeatherIcon.setAttribute("src", iconUrl);
+    
+          const elWeatherInfo = document.createElement("p");
+          elWeatherInfo.innerHTML = forecast.weather[0].description + "<br/>" 
+              + forecast.main.temp + "°C feels like: " + forecast.main.feels_like + "°C";
+    
+          elCard.append(elH1WeatherInfo, elWeatherIcon, elWeatherInfo);
+    
+          elDiv.appendChild(elCard);
+        }
+
+        day = nextForecast;
+
+      });
+/*
+  const elCanvas = document.createElement("canvas");
+  elCanvas.setAttribute("id", "myChart");
+
+  elDiv.appendChild(elCanvas);
+
   const elChart = document.querySelector("#myChart");
 
   var xValues = [100,200,300,400,500,600,700,800,900,1000];
@@ -189,6 +215,7 @@ const showWeatherInfo = (weatherData, hourlyForecastData) => {
       legend: {display: false}
     }
   });
+  */
 }
 
 /*
@@ -207,7 +234,7 @@ const showWeatherInfo = () => {
 }
 */
 
-const getDateTime = (dt) => {
+const getDateTime = (dt, inclTime = false) => {
     const date = new Date(Date.UTC(1970, 0, 1, 0, 0, dt));
 
     const currentDate = date.toLocaleDateString("en-BE", {
@@ -217,12 +244,17 @@ const getDateTime = (dt) => {
         day: "2-digit"
     })
 
-    const currentTime = date.toLocaleTimeString("en-BE", {
+    if(inclTime) {
+      const currentTime = date.toLocaleTimeString("en-BE", {
         hour: "2-digit",
         minute: "2-digit"
-    })
+      })
 
-    return currentDate + ' ' + currentTime;
+      return currentDate + ' ' + currentTime;
+    } else {
+      return currentDate;
+    }
+    
 }
 
 /*
